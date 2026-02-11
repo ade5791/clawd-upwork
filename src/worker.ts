@@ -5,9 +5,9 @@ import { prisma } from "./db.js";
 const worker = new Worker(
   "jobQueue",
   async (job) => {
-    const { jobId, query } = job.data as { jobId: string; query: string };
+    const { jobId, query, filters } = job.data as { jobId: string; query: string; filters?: any };
     // TODO: integrate real Upwork search + proposal generation.
-    const output = { results: [], note: `Processed query: ${query}` };
+    const output = { results: [], note: `Processed query: ${query}`, filters };
     await prisma.job.update({
       where: { id: jobId },
       data: { status: "done", output }

@@ -14,6 +14,7 @@ export async function automationRoutes(app: FastifyInstance) {
       .object({
         type: z.string().min(2),
         query: z.string().min(2),
+        filters: z.record(z.any()).optional(),
         frequencyMinutes: z.number().int().min(5).default(60)
       })
       .parse(req.body);
@@ -29,7 +30,8 @@ export async function automationRoutes(app: FastifyInstance) {
     const body = z
       .object({
         active: z.boolean().optional(),
-        frequencyMinutes: z.number().int().min(5).optional()
+        frequencyMinutes: z.number().int().min(5).optional(),
+        filters: z.record(z.any()).optional()
       })
       .parse(req.body);
     const automation = await prisma.automation.findUnique({ where: { id: params.id } });

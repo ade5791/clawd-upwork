@@ -31,6 +31,10 @@ model Job {
   id        String   @id @default(uuid())
   query     String
   status    String   @default("queued")
+  source    String?  // upwork/manual/etc
+  url       String?
+  budget    Float?
+  skills    Json?
   input     Json?
   output    Json?
   error     String?
@@ -44,6 +48,7 @@ model Automation {
   id               String   @id @default(uuid())
   type             String   // e.g., "search"
   query            String
+  filters          Json?
   frequencyMinutes Int      @default(60)
   active           Boolean  @default(true)
   lastRunAt        DateTime?
