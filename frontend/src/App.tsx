@@ -7,6 +7,7 @@ type Proposal = {
   proposal: string
   status: string
   url?: string
+  answers?: Record<string, any>
 }
 
 function App() {
@@ -38,6 +39,23 @@ function App() {
     fetchProposals()
   }
 
+  const saveAnswers = async (id: string, answers: string) => {
+    await fetch(`${apiBase}/proposals/${id}/answers`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers: safeJson(answers) || { raw: answers } }),
+    })
+    fetchProposals()
+  }
+
+  const submit = async (id: string) => {
+    await fetch(`${apiBase}/proposals/${id}/submit`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    fetchProposals()
+  }
+
   useEffect(() => {
     if (token) fetchProposals()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,7 +66,7 @@ function App() {
       <div className="header">
         <div>
           <div className="title">Upwork Proposals</div>
-          <div className="subtitle">Drafts, approvals, and auto‑submit status</div>
+          <div className="subtitle">Drafts, approvals, answers, and auto‑submit status</div>
         </div>
         <button className="button secondary" onClick={fetchProposals}>Refresh</button>
       </div>
@@ -74,16 +92,34 @@ function App() {
               </a>
             )}
             <p>{p.proposal}</p>
-            {p.status !== 'approved' && (
-              <button className="button success" onClick={() => approve(p.id)}>
-                Approve & Auto‑Submit
-              </button>
-            )}
+            <textarea
+              className="input"
+              rows={3}
+              placeholder='Screening answers (JSON or text)'
+              defaultValue={p.answers ? JSON.stringify(p.answers) : ''}
+              onBlur={(e) => saveAnswers(p.id, e.target.value)}
+            />
+            <div className="row">
+              {p.status !== 'approved' && (
+                <button className="button success" onClick={() => approve(p.id)}>
+                  Approve
+                </button>
+              )}
+              <button className="button" onClick={() => submit(p.id)}>Auto‑Submit</button>
+            </div>
           </div>
         ))}
       </div>
     </div>
   )
+}
+
+function safeJson(text: string) {
+  try {
+    return JSON.parse(text)
+  } catch {
+    return null
+  }
 }
 
 export default App
