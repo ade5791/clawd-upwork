@@ -27,7 +27,7 @@ export async function proposalRoutes(app: FastifyInstance) {
 
     await prisma.job.update({
       where: { id: body.jobId },
-      data: { output: { proposal } }
+      data: { output: JSON.stringify({ proposal }) }
     });
 
     return { proposal };

@@ -12,7 +12,7 @@ async function tick() {
 
     if (a.type === "search") {
       const job = await prisma.job.create({
-        data: { query: a.query, status: "queued", userId: a.userId, input: { query: a.query, filters: a.filters } }
+        data: { query: a.query, status: "queued", userId: a.userId, input: JSON.stringify({ query: a.query, filters: a.filters }) }
       });
       await jobQueue.add("search", { jobId: job.id, query: a.query, filters: a.filters });
     }

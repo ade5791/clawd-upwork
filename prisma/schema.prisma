@@ -3,24 +3,25 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String       @id @default(uuid())
+  email     String       @unique
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime     @default(now())
   tools     Tool[]
   jobs      Job[]
+  automations Automation[]
 }
 
 model Tool {
   id        String   @id @default(uuid())
   name      String
   status    String   @default("active")
-  config    Json?
+  config    String? // JSON string
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
@@ -34,9 +35,9 @@ model Job {
   source    String?  // upwork/manual/etc
   url       String?
   budget    Float?
-  skills    Json?
-  input     Json?
-  output    Json?
+  skills    String? // JSON string
+  input     String? // JSON string
+  output    String? // JSON string
   error     String?
   userId    String
   user      User     @relation(fields: [userId], references: [id])
@@ -48,7 +49,7 @@ model Automation {
   id               String   @id @default(uuid())
   type             String   // e.g., "search"
   query            String
-  filters          Json?
+  filters          String? // JSON string
   frequencyMinutes Int      @default(60)
   active           Boolean  @default(true)
   lastRunAt        DateTime?

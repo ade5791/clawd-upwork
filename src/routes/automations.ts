@@ -20,7 +20,7 @@ export async function automationRoutes(app: FastifyInstance) {
       .parse(req.body);
     const userId = req.user.sub;
     const automation = await prisma.automation.create({
-      data: { ...body, userId }
+      data: { ...body, filters: body.filters ? JSON.stringify(body.filters) : undefined, userId }
     });
     return { automation };
   });
@@ -36,7 +36,10 @@ export async function automationRoutes(app: FastifyInstance) {
       .parse(req.body);
     const automation = await prisma.automation.findUnique({ where: { id: params.id } });
     if (!automation) return reply.notFound("Automation not found");
-    const updated = await prisma.automation.update({ where: { id: params.id }, data: body });
+    const updated = await prisma.automation.update({
+      where: { id: params.id },
+      data: { ...body, filters: body.filters ? JSON.stringify(body.filters) : undefined }
+    });
     return { automation: updated };
   });
 }

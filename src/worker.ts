@@ -10,7 +10,7 @@ const worker = new Worker(
     const output = { results: [], note: `Processed query: ${query}`, filters };
     await prisma.job.update({
       where: { id: jobId },
-      data: { status: "done", output }
+      data: { status: "done", output: JSON.stringify(output) }
     });
     return output;
   },

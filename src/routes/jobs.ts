@@ -8,7 +8,7 @@ export async function jobRoutes(app: FastifyInstance) {
     const body = z.object({ query: z.string().min(2) }).parse(req.body);
     const userId = req.user.sub;
     const job = await prisma.job.create({
-      data: { query: body.query, status: "queued", userId, input: { query: body.query } }
+      data: { query: body.query, status: "queued", userId, input: JSON.stringify({ query: body.query }) }
     });
     await jobQueue.add("search", { jobId: job.id, query: body.query });
     return { job };

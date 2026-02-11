@@ -32,8 +32,8 @@ export async function ingestRoutes(app: FastifyInstance) {
             source: body.source,
             url: item.url,
             budget: item.budget,
-            skills: item.skills ?? [],
-            input: { source: body.source, ...item },
+            skills: JSON.stringify(item.skills ?? []),
+            input: JSON.stringify({ source: body.source, ...item }),
             userId: req.user.sub
           }
         })

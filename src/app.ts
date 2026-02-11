@@ -1,9 +1,6 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import sensible from "@fastify/sensible";
-import healthcheck from "@fastify/healthcheck";
-import swagger from "@fastify/swagger";
-import swaggerUi from "@fastify/swagger-ui";
 import env from "@fastify/env";
 import { z } from "zod";
 import jwtPlugin from "./plugins/jwt.js";
@@ -31,17 +28,10 @@ export async function buildApp() {
   await app.register(env, { schema, dotenv: true });
   await app.register(cors, { origin: true });
   await app.register(sensible);
-  await app.register(healthcheck, { exposeUptime: true });
   await app.register(jwtPlugin);
 
-  await app.register(swagger, {
-    swagger: {
-      info: { title: "Upwork Tools API", version: "0.1.0" }
-    }
-  });
-  await app.register(swaggerUi, { routePrefix: "/docs" });
-
   app.get("/", async () => ({ ok: true }));
+  app.get("/health", async () => ({ ok: true, ts: Date.now() }));
 
   await app.register(authRoutes);
   await app.register(toolRoutes);
