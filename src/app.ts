@@ -10,6 +10,7 @@ import { jobRoutes } from "./routes/jobs.js";
 import { ingestRoutes } from "./routes/ingest.js";
 import { proposalRoutes } from "./routes/proposals.js";
 import { proposalsViewRoutes } from "./routes/proposals_view.js";
+import { submitRoutes } from "./routes/submit.js";
 import { automationRoutes } from "./routes/automations.js";
 
 const schema = {
@@ -40,6 +41,7 @@ export async function buildApp() {
   await app.register(ingestRoutes);
   await app.register(proposalRoutes);
   await app.register(proposalsViewRoutes);
+  await app.register(submitRoutes);
   await app.register(automationRoutes);
 
   return app;
