@@ -19,6 +19,25 @@ export async function proposalsViewRoutes(app: FastifyInstance) {
     return { proposals };
   });
 
+  // Get one proposal
+  app.get("/proposals/:id", { preHandler: [app.authenticate] }, async (req, reply) => {
+    const params = z.object({ id: z.string().uuid() }).parse(req.params);
+    const job = await prisma.job.findUnique({ where: { id: params.id } });
+    if (!job) return reply.notFound("Proposal not found");
+    const output = job.output ? safeJson(job.output) : null;
+    const answers = job.proposalAnswers ? safeJson(job.proposalAnswers) : null;
+    return {
+      proposal: {
+        id: job.id,
+        query: job.query,
+        proposal: output?.proposal || null,
+        status: job.proposalStatus,
+        url: job.url,
+        answers
+      }
+    };
+  });
+
   // Approve proposal for auto-submit
   app.post("/proposals/:id/approve", { preHandler: [app.authenticate] }, async (req, reply) => {
     const params = z.object({ id: z.string().uuid() }).parse(req.params);
