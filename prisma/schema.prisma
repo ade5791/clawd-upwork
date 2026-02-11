@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  tools     Tool[]
+  jobs      Job[]
+}
+
+model Tool {
+  id        String   @id @default(uuid())
+  name      String
+  status    String   @default("active")
+  config    Json?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Job {
+  id        String   @id @default(uuid())
+  query     String
+  status    String   @default("queued")
+  input     Json?
+  output    Json?
+  error     String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Automation {
+  id               String   @id @default(uuid())
+  type             String   // e.g., "search"
+  query            String
+  frequencyMinutes Int      @default(60)
+  active           Boolean  @default(true)
+  lastRunAt        DateTime?
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
