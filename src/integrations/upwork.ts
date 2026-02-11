@@ -6,16 +6,17 @@ type ScrapeFilters = {
 };
 
 export async function scrapeUpwork(search: string, filters: ScrapeFilters = {}) {
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch({ headless: false, slowMo: 50 });
   const page = await browser.newPage();
+  page.setDefaultTimeout(60000);
 
   // NOTE: this expects the user session to be logged in.
   await page.goto("https://www.upwork.com/nx/find-work/", { waitUntil: "domcontentloaded" });
 
-  const searchBox = page.getByRole("searchbox", { name: "Search" }).first();
-  await searchBox.waitFor({ state: "visible", timeout: 60000 });
+  const searchBox = page.locator('input[placeholder="Search"]').first();
+  await searchBox.waitFor({ state: "visible" });
   await searchBox.fill(search);
-  await page.getByRole("button", { name: "Search" }).first().click();
+  await page.locator('button:has-text("Search")').first().click();
 
   // Apply a couple of simple filters if present
   if (filters.paymentVerified) {
