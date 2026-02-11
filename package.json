@@ -26,7 +26,9 @@
     "fastify-plugin": "^4.5.1",
     "@prisma/client": "^5.20.0",
     "bullmq": "^5.20.0",
-    "ioredis": "^5.4.1"
+    "ioredis": "^5.4.1",
+    "playwright": "^1.48.2",
+    "axios": "^1.7.7"
   },
   "devDependencies": {
     "prisma": "^5.20.0",

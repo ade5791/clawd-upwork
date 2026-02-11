@@ -18,7 +18,7 @@ npm run dev
 ```
 
 ## Next steps
-- Job search integrations
+- Job search integrations (Upwork scraper)
 - Proposal generator
 
 ## Worker
@@ -33,4 +33,12 @@ tsx src/worker.ts
 Run the automation scheduler:
 ```bash
 tsx src/scheduler.ts
+```
+
+## Scrape + ingest (manual run)
+```bash
+# Requires a logged-in Upwork browser session
+set JWT=YOUR_JWT_TOKEN
+set SEARCH=automation data extraction web scraping
+npx tsx src/scripts/scrape_and_ingest.ts
 ```
