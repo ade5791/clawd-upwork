@@ -40,6 +40,7 @@ model Job {
   output    String? // JSON string
   error     String?
   proposalStatus String @default("draft") // draft|approved|submitted
+  proposalAnswers String? // JSON string for screening answers
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())

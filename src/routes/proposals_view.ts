@@ -10,8 +10,9 @@ export async function proposalsViewRoutes(app: FastifyInstance) {
     const proposals = jobs
       .map((j) => {
         const output = j.output ? safeJson(j.output) : null;
+        const answers = j.proposalAnswers ? safeJson(j.proposalAnswers) : null;
         return output?.proposal
-          ? { id: j.id, query: j.query, proposal: output.proposal, status: j.proposalStatus, url: j.url }
+          ? { id: j.id, query: j.query, proposal: output.proposal, status: j.proposalStatus, url: j.url, answers }
           : null;
       })
       .filter(Boolean);
@@ -25,6 +26,18 @@ export async function proposalsViewRoutes(app: FastifyInstance) {
     if (!job) return reply.notFound("Proposal not found");
     const updated = await prisma.job.update({ where: { id: params.id }, data: { proposalStatus: "approved" } });
     return { proposal: { id: updated.id, status: updated.proposalStatus } };
+  });
+
+  app.post("/proposals/:id/answers", { preHandler: [app.authenticate] }, async (req, reply) => {
+    const params = z.object({ id: z.string().uuid() }).parse(req.params);
+    const body = z.object({ answers: z.record(z.any()) }).parse(req.body);
+    const job = await prisma.job.findUnique({ where: { id: params.id } });
+    if (!job) return reply.notFound("Proposal not found");
+    const updated = await prisma.job.update({
+      where: { id: params.id },
+      data: { proposalAnswers: JSON.stringify(body.answers) }
+    });
+    return { proposal: { id: updated.id, status: updated.proposalStatus, answers: body.answers } };
   });
 
   app.post("/proposals/:id/mark-submitted", { preHandler: [app.authenticate] }, async (req, reply) => {
